@@ -13,6 +13,7 @@ Icon?
 
 # ─── Python ──────────────────────────────────────────────────
 __pycache__/
+seed_data.py
 *.py[cod]
 *$py.class
 *.pyo
