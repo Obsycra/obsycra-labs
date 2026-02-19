@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quil</title>
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+
+<body>
+
+  <div id="lock-screen" class="screen active">
+    <div class="lock-ambient"></div>
+    <div class="lock-content">
+      <div class="quil-glyph">
+        <div class="glyph-ring"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M20 4C16 4 8 6 4 20c2-4 6-6 8-6-2 2-2 4-1 6 4-8 8-10 9-16z" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="lock-words">
+        <h1>Quil</h1>
+        <p>Private. Local. Yours.</p>
+      </div>
+      <div class="lock-form">
+        <input type="password" id="passInput" placeholder="Passphrase" autocomplete="off" />
+        <button id="unlockBtn" onclick="unlock()">
+          <span>Unlock</span>
+        </button>
+        <p id="lockHint" class="lock-hint"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="screen">
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M20 4C16 4 8 6 4 20c2-4 6-6 8-6-2 2-2 4-1 6 4-8 8-10 9-16z" stroke-linejoin="round" />
+        </svg>
+        <span>Quil</span>
+      </div>
+
+      <button class="nav-item active" data-panel="chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path
+            d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.83L3 20l1.09-3.27C3.4 15.56 3 14.33 3 13c0-4.418 4.03-8 9-8s9 3.582 9 7z"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Chat
+      </button>
+
+      <button class="nav-item" data-panel="workshop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Workshop
+      </button>
+
+      <div class="nav-group-label">Memory</div>
+
+      <button class="nav-item" data-panel="brain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path
+            d="M9.5 2a4.5 4.5 0 014.5 4.5v.5h1a3 3 0 013 3v.5a3.5 3.5 0 01-3.5 3.5H13v4.5a2.5 2.5 0 01-5 0V14H6.5A3.5 3.5 0 013 10.5V10a3 3 0 013-3h1v-.5A4.5 4.5 0 019.5 2z"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Brain
+      </button>
+
+      <div class="nav-group-label">Intelligence</div>
+
+      <button class="nav-item" data-panel="prompt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        How I Think
+      </button>
+
+      <div class="sidebar-foot">
+        <div class="mood-pill" id="moodPill">
+          <div class="mood-pulse"></div>
+          <span id="moodText">Ready</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="panel active" id="panel-chat">
+      <div class="panel-header">
+        <div>
+          <h2 id="chatGreeting">Hello ✦</h2>
+          <p id="chatSubtitle">Quil is ready</p>
+        </div>
+        <button class="mem-badge" onclick="switchPanel('brain')">
+          Memory active
+        </button>
+      </div>
+      <div class="messages" id="messages"></div>
+
+      <div class="input-area">
+        <div class="input-area-inner">
+
+          <!-- File upload drop zone -->
+          <div class="upload-bar" id="uploadBar" onclick="document.getElementById('fileInput').click()"
+            title="Upload a document for Quil to learn from">
+            <input type="file" id="fileInput" style="display:none"
+              accept=".txt,.md,.pdf,.csv,.json,.py,.js,.ts,.html,.css" onchange="handleFileUpload(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+              <path
+                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Upload document to learn from</span>
+            <span class="upload-hint">txt · md · pdf · json · code</span>
+          </div>
+
+          <div class="input-wrap" id="inputWrap">
+            <textarea id="msgInput" placeholder="Message Quil…" rows="1"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div class="input-hint">Enter to send · Shift+Enter for new line · Everything stays local</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-brain">
+      <div class="panel-header">
+        <div>
+          <h2>Quil's Brain</h2>
+          <p>Everything remembered — transparent, editable, yours</p>
+        </div>
+      </div>
+      <div class="brain-tabs" id="brainTabs">
+        <button class="btab active" data-mem="associative">Memory Map</button>
+        <button class="btab" data-mem="episodic">Episodic</button>
+        <button class="btab" data-mem="semantic">Semantic</button>
+        <button class="btab" data-mem="procedural">Procedural</button>
+        <button class="btab" data-mem="prospective">Prospective</button>
+        <button class="btab" data-mem="emotional">Emotional</button>
+        <button class="btab" data-mem="contextual">Contextual</button>
+        <button class="btab" data-mem="dreams">Dreams ✦</button>
+      </div>
+      <div class="brain-body" id="brainBody"></div>
+    </div>
+
+    <!-- WORKSHOP PANEL -->
+    <div class="panel" id="panel-workshop">
+      <div class="panel-header">
+        <div>
+          <h2>Workshop</h2>
+          <p>Quil works on tasks in the background — you get the result when it's done</p>
+        </div>
+        <div class="live-chip" id="workshopStatus">
+          <div class="live-dot"></div>
+          Idle
+        </div>
+      </div>
+      <div class="workshop-body" id="workshopBody">
+        <div class="workshop-start">
+          <div class="section-note">Give Quil a topic to research deeply. It runs in the background and appears here
+            when done — you can keep chatting meanwhile.</div>
+          <div class="workshop-input-wrap">
+            <textarea id="workshopInput" placeholder="Research topic, analysis task, or deep-dive question…"
+              rows="3"></textarea>
+            <button class="workshop-run-btn" onclick="startWorkshop()">
+              Run in background ▶
+            </button>
+          </div>
+        </div>
+        <div id="workshopJobs"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-prompt">
+      <div class="panel-header">
+        <div>
+          <h2>How I Think</h2>
+          <p>The instructions shaping Quil — live, editable, always yours</p>
+        </div>
+        <div class="live-chip">
+          <div class="live-dot"></div>
+          Live
+        </div>
+      </div>
+      <div class="prompt-body" id="promptBody"></div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/brain.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/prompt.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
