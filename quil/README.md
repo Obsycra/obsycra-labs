@@ -18,6 +18,10 @@
 
 ---
 
+https://github.com/user-attachments/assets/b80ba459-22e2-43b5-8b68-8ab857b5b5cb
+
+---
+
 ## What is Quil?
 
 Quil is a **desktop AI assistant** that runs entirely on your computer. No cloud. No API keys. No subscriptions. Unlike ChatGPT or other hosted AI tools, Quil:
